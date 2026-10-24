@@ -1,0 +1,18 @@
+groups:
+  - name: pulseops_demo
+    rules:
+      - alert: PulseOpsHighErrorCount
+        expr: sum(increase(pulseops_http_requests_total{status="500"}[2m])) > 5
+        for: 0s
+        labels:
+          severity: warning
+        annotations:
+          summary: "PulseOps experienced more than 5 failures in 2 minutes"
+          description: "Simulated errors exceeded the demo threshold."
+      - alert: PulseOpsSlowRequests
+        expr: histogram_quantile(0.95, sum by (le) (rate(pulseops_http_request_duration_seconds_bucket[2m]))) > 0.5
+        for: 15s
+        labels:
+          severity: warning
+        annotations:
+          summary: "PulseOps estimated p95 duration exceeds 500ms"

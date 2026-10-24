@@ -1,0 +1,15 @@
+// Read JSON log lines shared by the PulseOps app and send to Loki.
+loki.source.file "pulseops" {
+  targets = [{ "__path__" = "/logs/*.jsonl", "job" = "pulseops", "service_name" = "pulseops" }]
+  forward_to = [loki.write.local.receiver]
+  file_match {
+    enabled = true
+    sync_period = "5s"
+  }
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
